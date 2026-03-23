@@ -16,6 +16,7 @@ interface NotionProperty {
   files?: NotionFile[];
   select?: { name: string } | null;
   url?: string | null;
+  number?: number | null;
 }
 
 interface NotionPage {
@@ -69,10 +70,7 @@ export async function GET() {
           "Notion-Version": "2022-06-28",
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          sorts: [{ property: "Date", direction: "descending" }],
-          page_size: 100,
-        }),
+        body: JSON.stringify({ page_size: 100 }),
       }
     );
 
@@ -95,7 +93,16 @@ export async function GET() {
         date: getPropertyValue(props["Date"]),
         image: getPropertyValue(props["Image"]),
         type: getPropertyValue(props["Type"]),
+        order: props["Order"]?.number ?? null,
       };
+    });
+
+    // Sort: Order field (ascending) first, then by date (descending) for unordered posts
+    posts.sort((a, b) => {
+      if (a.order !== null && b.order !== null) return a.order - b.order;
+      if (a.order !== null) return -1;
+      if (b.order !== null) return 1;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
 
     return NextResponse.json({

@@ -20,6 +20,12 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Inter:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        {/* Prevent dark-mode flash on load */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(localStorage.getItem('ig-dark')==='true')document.documentElement.classList.add('dark')}catch(e){}})()`,
+          }}
+        />
       </head>
       <body>{children}</body>
     </html>

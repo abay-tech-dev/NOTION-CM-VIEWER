@@ -32,7 +32,6 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
 
   return (
     <>
-      {/* Tabs + Grid */}
       <div className="max-w-[935px] mx-auto">
         {/* Tabs */}
         <div className="flex justify-center gap-10 border-t border-[var(--ig-border)]">
@@ -64,7 +63,7 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
               </svg>
             </div>
             <p className="text-2xl font-bold text-[var(--ig-text)] mb-2">No Posts Yet</p>
-            <p className="text-sm">When you share photos, they'll appear here.</p>
+            <p className="text-sm">When you share photos, they&apos;ll appear here.</p>
           </div>
         ) : (
           <div className="grid grid-cols-3 gap-[3px]">
@@ -72,7 +71,9 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
               <button
                 key={post.id}
                 onClick={() => setSelected(post)}
-                className="relative aspect-square overflow-hidden bg-[#efefef] group cursor-pointer"
+                /* 4:5 portrait — Instagram's new profile grid format (1080×1350) */
+                className="relative overflow-hidden bg-[var(--ig-btn-secondary)] group cursor-pointer"
+                style={{ aspectRatio: "4/5" }}
               >
                 {post.image ? (
                   <img
@@ -82,7 +83,7 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300">
+                  <div className="w-full h-full flex items-center justify-center text-[var(--ig-border)]">
                     <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
                     </svg>
@@ -107,7 +108,7 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
                   </div>
                 </div>
 
-                {/* Type badge */}
+                {/* Type badges */}
                 {post.type?.toLowerCase() === "reel" && (
                   <div className="absolute top-2 right-2 text-white drop-shadow-lg">
                     <ReelsBadgeIcon />
@@ -124,13 +125,13 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
         )}
       </div>
 
-      {/* Modal */}
+      {/* ── Modal ─────────────────────────────────────────────────────────── */}
       {selected && (
         <div
           className="fixed inset-0 bg-black/75 z-50 flex items-center justify-center p-4"
           onClick={() => setSelected(null)}
         >
-          {/* Close button */}
+          {/* Close */}
           <button
             onClick={() => setSelected(null)}
             className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors z-10 p-2"
@@ -141,66 +142,71 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
           </button>
 
           <div
-            className="bg-white w-full max-w-[935px] max-h-[90vh] flex flex-col md:flex-row overflow-hidden rounded-none md:rounded-lg"
-            style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.6)" }}
+            className="bg-[var(--ig-surface-raised)] w-full max-w-[935px] max-h-[90vh] flex flex-col md:flex-row overflow-hidden rounded-none md:rounded-xl"
+            style={{ boxShadow: "0 24px 80px rgba(0,0,0,0.7)" }}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Image */}
-            <div className="md:w-[55%] bg-black flex items-center justify-center min-h-[200px] md:min-h-0 shrink-0">
+            {/* Image side — keeps 4:5 aspect in modal too */}
+            <div
+              className="md:w-[55%] bg-black flex items-center justify-center shrink-0"
+              style={{ minHeight: 240 }}
+            >
               {selected.image ? (
                 <img
                   src={selected.image}
                   alt={selected.name}
                   className="w-full h-full object-contain max-h-[90vh]"
+                  style={{ aspectRatio: "4/5" }}
                 />
               ) : (
-                <div className="text-gray-500 p-12 text-sm">No image</div>
+                <div className="text-[var(--ig-text-secondary)] p-12 text-sm">No image</div>
               )}
             </div>
 
             {/* Right panel */}
             <div className="md:w-[45%] flex flex-col min-h-0 border-l border-[var(--ig-border)]">
-
               {/* Header */}
               <div className="flex items-center gap-3 px-4 py-3 border-b border-[var(--ig-border)] shrink-0">
                 <Avatar src={profileImage} alt={profileName} size={32} />
                 <div className="flex flex-col">
-                  <span className="font-semibold text-[14px] leading-tight">{profileName || "user"}</span>
+                  <span className="font-semibold text-[14px] leading-tight text-[var(--ig-text)]">
+                    {profileName || "user"}
+                  </span>
                   {selected.name && selected.name !== profileName && (
                     <span className="text-[var(--ig-text-secondary)] text-[12px] leading-tight">{selected.name}</span>
                   )}
                 </div>
                 <button className="ml-auto p-1 text-[var(--ig-text)] hover:text-[var(--ig-text-secondary)] transition-colors">
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
+                    <circle cx="5" cy="12" r="2" />
+                    <circle cx="12" cy="12" r="2" />
+                    <circle cx="19" cy="12" r="2" />
                   </svg>
                 </button>
               </div>
 
-              {/* Caption / Comments area */}
+              {/* Caption / comments */}
               <div className="flex-1 overflow-y-auto scrollbar-thin p-4 space-y-4">
                 {selected.caption && (
                   <div className="flex gap-3">
                     <Avatar src={profileImage} alt={profileName} size={32} />
                     <div className="text-[14px] leading-relaxed">
-                      <span className="font-semibold mr-2">{profileName || "user"}</span>
+                      <span className="font-semibold text-[var(--ig-text)] mr-2">{profileName || "user"}</span>
                       <span className="text-[var(--ig-text)]">{renderCaption(selected.caption)}</span>
                       <p className="text-[var(--ig-text-secondary)] text-[12px] mt-1.5">
-                        {selected.date
-                          ? timeAgo(selected.date)
-                          : ""}
+                        {selected.date ? timeAgo(selected.date) : ""}
                       </p>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Actions bar */}
+              {/* Actions */}
               <div className="border-t border-[var(--ig-border)] shrink-0">
                 <div className="flex items-center px-4 pt-3 pb-1 gap-2">
                   <button
                     onClick={() => toggleLike(selected.id)}
-                    className="p-1 -m-1 transition-transform active:scale-95"
+                    className="p-1 -m-1 transition-transform active:scale-90"
                     title="Like"
                   >
                     {liked.has(selected.id) ? (
@@ -208,36 +214,34 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53L12 21.35z" />
                       </svg>
                     ) : (
-                      <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
+                      <svg className="w-7 h-7 text-[var(--ig-text)]" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                       </svg>
                     )}
                   </button>
-                  <button className="p-1 -m-1 hover:opacity-60 transition-opacity" title="Comment">
+                  <button className="p-1 -m-1 hover:opacity-60 transition-opacity text-[var(--ig-text)]" title="Comment">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                     </svg>
                   </button>
-                  <button className="p-1 -m-1 hover:opacity-60 transition-opacity" title="Share">
+                  <button className="p-1 -m-1 hover:opacity-60 transition-opacity text-[var(--ig-text)]" title="Share">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                     </svg>
                   </button>
-                  <button className="ml-auto p-1 -m-1 hover:opacity-60 transition-opacity" title="Save">
+                  <button className="ml-auto p-1 -m-1 hover:opacity-60 transition-opacity text-[var(--ig-text)]" title="Save">
                     <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth={1.6} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                     </svg>
                   </button>
                 </div>
 
-                {/* Like count */}
                 <div className="px-4 pt-1 pb-0.5">
                   <p className="text-[14px] font-semibold text-[var(--ig-text)]">
                     {liked.has(selected.id) ? "1 like" : "Be the first to like this"}
                   </p>
                 </div>
 
-                {/* Date */}
                 <div className="px-4 pb-3">
                   <time className="text-[11px] text-[var(--ig-text-secondary)] uppercase tracking-wider">
                     {selected.date
@@ -260,9 +264,9 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
                   <input
                     type="text"
                     placeholder="Add a comment…"
-                    className="flex-1 text-[14px] outline-none placeholder:text-[var(--ig-text-secondary)] bg-transparent"
+                    className="flex-1 text-[14px] outline-none placeholder:text-[var(--ig-text-secondary)] bg-transparent text-[var(--ig-text)]"
                   />
-                  <button className="text-[var(--ig-blue)] text-[14px] font-semibold opacity-50 cursor-default" disabled>
+                  <button className="text-[var(--ig-blue)] text-[14px] font-semibold opacity-40 cursor-default" disabled>
                     Post
                   </button>
                 </div>
@@ -275,18 +279,18 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
   );
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+/* ─── Helpers ─────────────────────────────────────────────────────────────── */
 
 function Avatar({ src, alt, size }: { src?: string; alt?: string; size: number }) {
   return (
     <div
-      className="rounded-full overflow-hidden bg-[#efefef] shrink-0 flex items-center justify-center"
+      className="rounded-full overflow-hidden bg-[var(--ig-btn-secondary)] shrink-0 flex items-center justify-center"
       style={{ width: size, height: size }}
     >
       {src ? (
         <img src={src} alt={alt} className="w-full h-full object-cover" />
       ) : (
-        <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-[var(--ig-text-secondary)]" fill="currentColor" viewBox="0 0 24 24">
           <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
         </svg>
       )}
@@ -298,7 +302,9 @@ function renderCaption(text: string) {
   const parts = text.split(/(#[\w]+|@[\w.]+)/g);
   return parts.map((part, i) =>
     part.startsWith("#") || part.startsWith("@") ? (
-      <span key={i} className="text-[var(--ig-blue)] cursor-pointer hover:opacity-80">{part}</span>
+      <span key={i} className="text-[var(--ig-blue)] cursor-pointer hover:opacity-80">
+        {part}
+      </span>
     ) : (
       part
     )
@@ -323,7 +329,7 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(months / 12)}y ago`;
 }
 
-// ─── Icons ────────────────────────────────────────────────────────────────────
+/* ─── Icons ───────────────────────────────────────────────────────────────── */
 
 function GridIcon() {
   return (

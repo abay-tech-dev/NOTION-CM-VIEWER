@@ -45,24 +45,36 @@ export default function Home() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#fafafa]">
-        <nav className="bg-white border-b border-[var(--ig-border)] sticky top-0 z-40">
-          <div className="max-w-[935px] mx-auto flex items-center justify-between h-14 px-4">
-            <span className="text-2xl font-semibold" style={{ fontFamily: "'Dancing Script', cursive" }}>InstaGrid</span>
-          </div>
-        </nav>
-        <div className="max-w-[935px] mx-auto px-4 py-10 animate-pulse">
-          <div className="flex gap-8 mb-8">
-            <div className="w-[150px] h-[150px] rounded-full bg-gray-200 shrink-0" />
-            <div className="flex-1 space-y-4 py-4">
-              <div className="h-4 bg-gray-200 rounded w-1/3" />
-              <div className="h-4 bg-gray-200 rounded w-1/2" />
-              <div className="h-4 bg-gray-200 rounded w-1/4" />
+      <main className="min-h-screen bg-[var(--ig-surface)]">
+        <Navbar />
+        <div className="max-w-[935px] mx-auto px-4 py-10">
+          {/* Profile skeleton */}
+          <div className="flex gap-10 mb-10">
+            <div className="w-[150px] h-[150px] rounded-full skeleton shrink-0" />
+            <div className="flex-1 space-y-4 py-3">
+              <div className="h-5 skeleton rounded w-1/3" />
+              <div className="flex gap-6">
+                <div className="h-4 skeleton rounded w-16" />
+                <div className="h-4 skeleton rounded w-16" />
+                <div className="h-4 skeleton rounded w-16" />
+              </div>
+              <div className="h-4 skeleton rounded w-1/2" />
+              <div className="h-4 skeleton rounded w-2/5" />
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-[3px]">
+          {/* Highlights skeleton */}
+          <div className="flex gap-6 pb-5 border-t border-[var(--ig-border)] pt-6 mb-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex flex-col items-center gap-1.5">
+                <div className="w-16 h-16 rounded-full skeleton" />
+                <div className="h-3 w-12 skeleton rounded" />
+              </div>
+            ))}
+          </div>
+          {/* Grid skeleton */}
+          <div className="grid grid-cols-3 gap-[3px] mt-4">
             {Array.from({ length: 9 }).map((_, i) => (
-              <div key={i} className="aspect-square bg-gray-200" />
+              <div key={i} className="aspect-square skeleton" />
             ))}
           </div>
         </div>
@@ -72,46 +84,33 @@ export default function Home() {
 
   if (error || !profile) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-[#fafafa]">
-        <div className="text-center p-8 max-w-md">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-gray-300 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-            </svg>
+      <main className="min-h-screen flex flex-col bg-[var(--ig-surface)]">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center p-8 max-w-sm">
+            <div className="w-20 h-20 mx-auto mb-5 rounded-full border-2 border-[var(--ig-border)] flex items-center justify-center bg-white">
+              <svg className="w-9 h-9 text-[var(--ig-text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+              </svg>
+            </div>
+            <h1 className="text-lg font-semibold mb-2">Configuration Required</h1>
+            <p className="text-[var(--ig-text-secondary)] text-sm mb-4 leading-relaxed">
+              Set <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">NOTION_TOKEN</code> and{" "}
+              <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">NOTION_DATABASE_ID</code>{" "}
+              in your environment variables.
+            </p>
+            {error && (
+              <p className="text-[var(--ig-error)] text-sm bg-red-50 p-3 rounded-xl border border-red-100">{error}</p>
+            )}
           </div>
-          <h1 className="text-lg font-semibold mb-2">Configuration Required</h1>
-          <p className="text-[var(--ig-secondary)] text-sm mb-3">
-            Set <code className="bg-gray-100 px-1 rounded">NOTION_TOKEN</code> and{" "}
-            <code className="bg-gray-100 px-1 rounded">NOTION_DATABASE_ID</code> in your environment variables.
-          </p>
-          {error && (
-            <p className="text-red-500 text-sm bg-red-50 p-3 rounded">{error}</p>
-          )}
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#fafafa] pb-16">
-      {/* Instagram-style top bar */}
-      <nav className="bg-white border-b border-[var(--ig-border)] sticky top-0 z-40">
-        <div className="max-w-[935px] mx-auto flex items-center justify-between h-[60px] px-4">
-          <h2 className="text-2xl font-semibold" style={{ fontFamily: "'Dancing Script', cursive, serif" }}>
-            InstaGrid
-          </h2>
-          <div className="flex items-center gap-5 text-[var(--ig-secondary)]">
-            <svg className="w-6 h-6 hover:text-[var(--ig-text)] cursor-pointer transition-colors" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-            <svg className="w-6 h-6 hover:text-[var(--ig-text)] cursor-pointer transition-colors" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-            </svg>
-          </div>
-        </div>
-      </nav>
-
+    <main className="min-h-screen bg-[var(--ig-surface)] pb-20">
+      <Navbar profileImage={profile.image} />
       <ProfileHeader
         name={profile.name}
         image={profile.image}
@@ -120,8 +119,116 @@ export default function Home() {
         followers={profile.followers}
         following={profile.following}
       />
-
       <PostGrid posts={posts} profileImage={profile.image} profileName={profile.name} />
     </main>
+  );
+}
+
+function Navbar({ profileImage }: { profileImage?: string }) {
+  return (
+    <nav
+      className="bg-white/80 border-b border-[var(--ig-border)] sticky top-0 z-40"
+      style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+    >
+      <div className="max-w-[975px] mx-auto flex items-center justify-between h-[60px] px-5">
+        {/* Logo */}
+        <span
+          className="text-[26px] select-none"
+          style={{ fontFamily: "var(--font-logo)", lineHeight: 1 }}
+        >
+          InstaGrid
+        </span>
+
+        {/* Search — desktop only */}
+        <div className="hidden md:flex items-center bg-[#efefef] rounded-xl px-3 py-2 gap-2 w-[268px]">
+          <svg className="w-4 h-4 text-[var(--ig-text-secondary)] shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search"
+            className="bg-transparent text-sm flex-1 outline-none text-[var(--ig-text)] placeholder:text-[var(--ig-text-secondary)]"
+          />
+        </div>
+
+        {/* Icon row */}
+        <div className="flex items-center gap-1.5 text-[var(--ig-text)]">
+          {/* Home */}
+          <NavBtn label="Home">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V11.543L12 2 2 11.543V22h7.005Z" />
+            </svg>
+          </NavBtn>
+
+          {/* Search (mobile) */}
+          <NavBtn label="Search" extraClass="md:hidden">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+            </svg>
+          </NavBtn>
+
+          {/* Explore */}
+          <NavBtn label="Explore">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" />
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+            </svg>
+          </NavBtn>
+
+          {/* Reels */}
+          <NavBtn label="Reels">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12.007 2.134A10 10 0 1 0 22 12.154 10.01 10.01 0 0 0 12.007 2.134Zm-1.585 13.368L9.8 9.768l5.586 3.12Z" />
+            </svg>
+          </NavBtn>
+
+          {/* Messages */}
+          <NavBtn label="Messages">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+            </svg>
+          </NavBtn>
+
+          {/* Notifications */}
+          <NavBtn label="Notifications">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+            </svg>
+          </NavBtn>
+
+          {/* Create */}
+          <NavBtn label="Create">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="3" />
+              <path strokeLinecap="round" d="M12 8v8M8 12h8" />
+            </svg>
+          </NavBtn>
+
+          {/* Profile avatar */}
+          <button className="w-7 h-7 rounded-full overflow-hidden ring-2 ring-offset-1 ring-transparent hover:ring-[var(--ig-border)] transition-all ml-1" title="Profile">
+            {profileImage ? (
+              <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-[var(--ig-border)] flex items-center justify-center">
+                <svg className="w-4 h-4 text-[var(--ig-text-secondary)]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                </svg>
+              </div>
+            )}
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function NavBtn({ children, label, extraClass = "" }: { children: React.ReactNode; label: string; extraClass?: string }) {
+  return (
+    <button
+      title={label}
+      className={`p-2.5 rounded-xl hover:bg-gray-100 transition-colors ${extraClass}`}
+    >
+      {children}
+    </button>
   );
 }

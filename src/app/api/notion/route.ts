@@ -105,6 +105,8 @@ export async function GET() {
         image: process.env.PROFILE_IMAGE_URL ?? "",
         bio: process.env.PROFILE_BIO ?? "",
         postsCount: posts.length,
+        followers: process.env.PROFILE_FOLLOWERS ?? "—",
+        following: process.env.PROFILE_FOLLOWING ?? "—",
       },
     });
   } catch (err) {

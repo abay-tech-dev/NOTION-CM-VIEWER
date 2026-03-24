@@ -9,13 +9,6 @@ interface ProfileHeaderProps {
   following?: string;
 }
 
-const HIGHLIGHTS = [
-  { label: "Travel" },
-  { label: "Food" },
-  { label: "Friends" },
-  { label: "Work" },
-  { label: "Moments" },
-];
 
 export default function ProfileHeader({
   name,
@@ -93,27 +86,6 @@ export default function ProfileHeader({
           </div>
         </header>
 
-        {/* Story Highlights */}
-        <div className="px-4 pb-5 flex items-center gap-5 overflow-x-auto scrollbar-none">
-          {/* New highlight */}
-          <HighlightBubble
-            label="New"
-            icon={
-              <svg
-                className="w-8 h-8 text-[var(--ig-text-secondary)]"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth={1.5}
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            }
-          />
-          {HIGHLIGHTS.map((h) => (
-            <HighlightBubble key={h.label} label={h.label} placeholder />
-          ))}
-        </div>
       </div>
     </div>
   );
@@ -125,35 +97,5 @@ function Stat({ value, label }: { value: string | number; label: string }) {
       <span className="font-semibold text-[15px] text-[var(--ig-text)]">{value}</span>{" "}
       <span className="text-[15px] text-[var(--ig-text)]">{label}</span>
     </div>
-  );
-}
-
-function HighlightBubble({
-  label,
-  icon,
-  image,
-  placeholder,
-}: {
-  label: string;
-  icon?: React.ReactNode;
-  image?: string;
-  placeholder?: boolean;
-}) {
-  return (
-    <button className="flex flex-col items-center gap-1.5 shrink-0 group">
-      <div className="w-[77px] h-[77px] rounded-full border-2 border-[var(--ig-border)] flex items-center justify-center overflow-hidden bg-[var(--ig-surface)] transition-opacity group-hover:opacity-75">
-        {icon ?? (
-          image ? (
-            <img src={image} alt={label} className="w-full h-full object-cover rounded-full" />
-          ) : placeholder ? (
-            <div
-              className="w-full h-full rounded-full"
-              style={{ background: "linear-gradient(135deg, var(--ig-btn-secondary) 0%, var(--ig-border) 100%)" }}
-            />
-          ) : null
-        )}
-      </div>
-      <span className="text-[12px] text-[var(--ig-text)] max-w-[74px] text-center truncate">{label}</span>
-    </button>
   );
 }

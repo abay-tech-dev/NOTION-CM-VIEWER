@@ -1,4 +1,3 @@
-import { Client } from "@notionhq/client";
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +15,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing credentials" }, { status: 500 });
   }
 
-  const notion = new Client({ auth: token });
-
   let updates: ReorderUpdate[];
   try {
     const body = await req.json();
@@ -27,30 +24,39 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Notion-Version": "2022-06-28",
+    "Content-Type": "application/json",
+  };
+
   // Auto-create the "Order" Number property in the database if it doesn't exist yet
   try {
-    const db = await notion.databases.retrieve({ database_id: databaseId });
-    if (!("Order" in db.properties)) {
-      await notion.databases.update({
-        database_id: databaseId,
-        properties: {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          Order: { type: "number", number: { format: "number" } } as any,
-        },
-      });
+    const dbRes = await fetch(`https://api.notion.com/v1/databases/${databaseId}`, { headers });
+    if (dbRes.ok) {
+      const db = await dbRes.json();
+      if (!db.properties?.["Order"]) {
+        await fetch(`https://api.notion.com/v1/databases/${databaseId}`, {
+          method: "PATCH",
+          headers,
+          body: JSON.stringify({
+            properties: { Order: { number: { format: "number" } } },
+          }),
+        });
+      }
     }
   } catch {
-    // Non-fatal — proceed and let the update attempt fail if needed
+    // Non-fatal — proceed and let the page updates fail if needed
   }
 
   // Update each page's Order value in parallel
   try {
     await Promise.all(
       updates.map(({ id, order }) =>
-        notion.pages.update({
-          page_id: id,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          properties: { Order: { number: order } } as any,
+        fetch(`https://api.notion.com/v1/pages/${id}`, {
+          method: "PATCH",
+          headers,
+          body: JSON.stringify({ properties: { Order: { number: order } } }),
         })
       )
     );

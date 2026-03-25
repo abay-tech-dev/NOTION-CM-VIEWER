@@ -41,17 +41,22 @@ export default function Home() {
   }, [dark]);
 
   useEffect(() => {
-    fetch("/api/notion")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.error) setError(data.error);
-        else {
-          setPosts(data.posts);
-          setProfile(data.profile);
-        }
-      })
-      .catch(() => setError("Failed to load data"))
-      .finally(() => setLoading(false));
+    const load = () =>
+      fetch("/api/notion")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) setError(data.error);
+          else {
+            setPosts(data.posts);
+            setProfile(data.profile);
+          }
+        })
+        .catch(() => setError("Failed to load data"))
+        .finally(() => setLoading(false));
+
+    load();
+    const interval = setInterval(load, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
@@ -158,7 +163,7 @@ function Navbar({
           className="text-[26px] text-[var(--ig-text)] select-none"
           style={{ fontFamily: "var(--font-logo)", lineHeight: 1 }}
         >
-          InstaGrid
+          InstaFeedViewer
         </span>
 
         {/* Icon row */}

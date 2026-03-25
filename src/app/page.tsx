@@ -11,7 +11,6 @@ interface Post {
   date: string;
   image: string;
   type: string;
-  order: number | null;
 }
 
 interface Profile {

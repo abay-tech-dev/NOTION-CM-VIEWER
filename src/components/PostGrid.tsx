@@ -1,24 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  DndContext,
-  closestCenter,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent,
-  DragStartEvent,
-  DragOverlay,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  arrayMove,
-  rectSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+import { useState } from "react";
 
 interface Post {
   id: string;
@@ -36,60 +18,16 @@ interface PostGridProps {
   profileName?: string;
 }
 
-type SaveStatus = "idle" | "saving" | "saved" | "error";
-
 export default function PostGrid({ posts, profileImage, profileName }: PostGridProps) {
   const [selected, setSelected] = useState<Post | null>(null);
-  const [activeTab, setActiveTab] = useState<"posts" | "reels" | "tagged">("posts");
   const [liked, setLiked] = useState<Set<string>>(new Set());
 
-  // Local ordered copy of posts
-  const [localPosts, setLocalPosts] = useState<Post[]>(posts);
-  useEffect(() => setLocalPosts(posts), [posts]);
-
-  // Drag state
-  const [editOrder, setEditOrder] = useState(false);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 5 } })
-  );
-
-  function handleDragStart(event: DragStartEvent) {
-    setActiveId(String(event.active.id));
-  }
-
-  function handleDragEnd(event: DragEndEvent) {
-    setActiveId(null);
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = localPosts.findIndex((p) => p.id === active.id);
-    const newIndex = localPosts.findIndex((p) => p.id === over.id);
-    const reordered = arrayMove(localPosts, oldIndex, newIndex);
-    setLocalPosts(reordered);
-    persistOrder(reordered);
-  }
-
-  async function persistOrder(ordered: Post[]) {
-    setSaveStatus("saving");
-    try {
-      const res = await fetch("/api/notion/reorder", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          updates: ordered.map((p, i) => ({ id: p.id, order: i + 1 })),
-        }),
-      });
-      setSaveStatus(res.ok ? "saved" : "error");
-    } catch {
-      setSaveStatus("error");
-    } finally {
-      setTimeout(() => setSaveStatus("idle"), 2500);
-    }
-  }
+  // Sort by date descending (most recent first), like Instagram
+  const sortedPosts = [...posts].sort((a, b) => {
+    const da = a.date ? new Date(a.date).getTime() : 0;
+    const db = b.date ? new Date(b.date).getTime() : 0;
+    return db - da;
+  });
 
   const toggleLike = (id: string) => {
     setLiked((prev) => {
@@ -99,77 +37,14 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
     });
   };
 
-  const activeDragPost = localPosts.find((p) => p.id === activeId);
-
   return (
     <>
       <div className="max-w-[935px] mx-auto">
-        {/* Tabs + Edit-order controls */}
-        <div className="flex items-center border-t border-[var(--ig-border)]">
-          {/* Tab buttons */}
-          <div className="flex flex-1 justify-center gap-10">
-            {(["posts", "reels", "tagged"] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex items-center gap-1.5 py-3 text-[11px] font-semibold tracking-[1.5px] uppercase transition-colors border-t-[1.5px] -mt-px ${
-                  activeTab === tab
-                    ? "text-[var(--ig-text)] border-[var(--ig-text)]"
-                    : "text-[var(--ig-text-secondary)] border-transparent hover:text-[var(--ig-text)]"
-                }`}
-              >
-                {tab === "posts" && <GridIcon />}
-                {tab === "reels" && <ReelsTabIcon />}
-                {tab === "tagged" && <TagIcon />}
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          {/* Edit order toggle */}
-          {localPosts.length > 0 && (
-            <div className="flex items-center gap-2 pr-3">
-              {/* Save status badge */}
-              {saveStatus !== "idle" && (
-                <span
-                  className={`text-[11px] font-medium transition-opacity ${
-                    saveStatus === "saving"
-                      ? "text-[var(--ig-text-secondary)]"
-                      : saveStatus === "saved"
-                      ? "text-green-500"
-                      : "text-[var(--ig-error)]"
-                  }`}
-                >
-                  {saveStatus === "saving" && "Saving…"}
-                  {saveStatus === "saved" && "✓ Saved"}
-                  {saveStatus === "error" && "Save failed"}
-                </span>
-              )}
-              <button
-                onClick={() => setEditOrder((v) => !v)}
-                title={editOrder ? "Exit edit mode" : "Reorder posts"}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-colors ${
-                  editOrder
-                    ? "bg-[var(--ig-blue)] text-white"
-                    : "bg-[var(--ig-btn-secondary)] text-[var(--ig-text)] hover:bg-[var(--ig-btn-secondary-hover)]"
-                }`}
-              >
-                <DragHandleIcon className="w-3.5 h-3.5" />
-                {editOrder ? "Done" : "Reorder"}
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Edit-order hint banner */}
-        {editOrder && (
-          <div className="mx-3 mb-2 px-3 py-2 bg-[var(--ig-blue)]/10 border border-[var(--ig-blue)]/20 rounded-xl text-[12px] text-[var(--ig-blue)] text-center">
-            Drag photos to reorder — changes save automatically to Notion
-          </div>
-        )}
+        {/* Separator */}
+        <div className="border-t border-[var(--ig-border)]" />
 
         {/* Grid */}
-        {localPosts.length === 0 ? (
+        {sortedPosts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-[var(--ig-text-secondary)]">
             <div className="w-20 h-20 mb-5 rounded-full border-2 border-[var(--ig-border)] flex items-center justify-center">
               <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth={1} viewBox="0 0 24 24">
@@ -181,47 +56,16 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
             <p className="text-sm">When you share photos, they&apos;ll appear here.</p>
           </div>
         ) : (
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragStart={handleDragStart}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext items={localPosts.map((p) => p.id)} strategy={rectSortingStrategy}>
-              <div className="grid grid-cols-3 gap-[3px]">
-                {localPosts.map((post) => (
-                  <SortablePostItem
-                    key={post.id}
-                    post={post}
-                    editOrder={editOrder}
-                    onOpen={(p) => setSelected(p)}
-                    isLiked={liked.has(post.id)}
-                    isDragging={post.id === activeId}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-
-            {/* Drag overlay — floating ghost image while dragging */}
-            <DragOverlay>
-              {activeDragPost ? (
-                <div
-                  className="overflow-hidden shadow-2xl ring-2 ring-[var(--ig-blue)] rounded-sm"
-                  style={{ aspectRatio: "4/5", opacity: 0.9 }}
-                >
-                  {activeDragPost.image ? (
-                    <img
-                      src={activeDragPost.image}
-                      alt={activeDragPost.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-[var(--ig-btn-secondary)]" />
-                  )}
-                </div>
-              ) : null}
-            </DragOverlay>
-          </DndContext>
+          <div className="grid grid-cols-3 gap-[3px]">
+            {sortedPosts.map((post) => (
+              <PostItem
+                key={post.id}
+                post={post}
+                onOpen={(p) => setSelected(p)}
+                isLiked={liked.has(post.id)}
+              />
+            ))}
+          </div>
         )}
       </div>
 
@@ -361,54 +205,29 @@ export default function PostGrid({ posts, profileImage, profileName }: PostGridP
   );
 }
 
-/* ─── Sortable tile ───────────────────────────────────────────────────────── */
+/* ─── Post tile ───────────────────────────────────────────────────────────── */
 
-function SortablePostItem({
+function PostItem({
   post,
-  editOrder,
   onOpen,
   isLiked,
-  isDragging,
 }: {
   post: Post;
-  editOrder: boolean;
   onOpen: (p: Post) => void;
   isLiked: boolean;
-  isDragging: boolean;
 }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-  } = useSortable({ id: post.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    aspectRatio: "4/5" as const,
-    opacity: isDragging ? 0 : 1,       // hide original while overlay is shown
-  };
-
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      className={`relative overflow-hidden bg-[var(--ig-btn-secondary)] group ${
-        editOrder ? "cursor-grab active:cursor-grabbing" : "cursor-pointer"
-      }`}
-      {...(editOrder ? { ...attributes, ...listeners } : {})}
-      onClick={() => !editOrder && onOpen(post)}
+      className="relative overflow-hidden bg-[var(--ig-btn-secondary)] group cursor-pointer"
+      style={{ aspectRatio: "4/5" }}
+      onClick={() => onOpen(post)}
     >
-      {/* Image */}
       {post.image ? (
         <img
           src={post.image}
           alt={post.name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
           loading="lazy"
-          draggable={false}
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center text-[var(--ig-border)]">
@@ -418,44 +237,37 @@ function SortablePostItem({
         </div>
       )}
 
-      {/* Hover overlay (only in normal mode) */}
-      {!editOrder && (
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-          <div className="flex gap-7 text-white font-bold text-[15px]">
-            <span className="flex items-center gap-2">
-              <svg className="w-6 h-6" fill="white" viewBox="0 0 24 24">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53L12 21.35z" />
-              </svg>
-              {isLiked ? "1" : "—"}
-            </span>
-            <span className="flex items-center gap-2">
-              <svg className="w-6 h-6" fill="white" viewBox="0 0 24 24">
-                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-              </svg>
-              —
-            </span>
-          </div>
+      {/* Hover overlay */}
+      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+        <div className="flex gap-7 text-white font-bold text-[15px]">
+          <span className="flex items-center gap-2">
+            <svg className="w-6 h-6" fill="white" viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.27 2 8.5 2 5.41 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.08C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.41 22 8.5c0 3.77-3.4 6.86-8.55 11.53L12 21.35z" />
+            </svg>
+            {isLiked ? "1" : "—"}
+          </span>
+          <span className="flex items-center gap-2">
+            <svg className="w-6 h-6" fill="white" viewBox="0 0 24 24">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+            </svg>
+            —
+          </span>
         </div>
-      )}
-
-      {/* Edit-order drag overlay */}
-      {editOrder && (
-        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-          <div className="bg-black/50 rounded-lg p-2 backdrop-blur-sm">
-            <DragHandleIcon className="w-6 h-6 text-white" />
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Type badges */}
-      {post.type?.toLowerCase() === "reel" && !editOrder && (
+      {post.type?.toLowerCase() === "reel" && (
         <div className="absolute top-2 right-2 text-white drop-shadow-lg">
-          <ReelsBadgeIcon />
+          <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+          </svg>
         </div>
       )}
-      {post.type?.toLowerCase() === "carousel" && !editOrder && (
+      {post.type?.toLowerCase() === "carousel" && (
         <div className="absolute top-2 right-2 text-white drop-shadow-lg">
-          <CarouselBadgeIcon />
+          <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
+            <path d="M2 6h2v12H2V6zm3 0h2v12H5V6zm14 0h2v12h-2V6zm-3 0h2v12h-2V6zM8 4h8a2 2 0 012 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2V6a2 2 0 012-2z" />
+          </svg>
         </div>
       )}
     </div>
@@ -508,56 +320,4 @@ function timeAgo(dateStr: string): string {
   const months = Math.floor(days / 30);
   if (months < 12) return `${months}mo ago`;
   return `${Math.floor(months / 12)}y ago`;
-}
-
-/* ─── Icons ───────────────────────────────────────────────────────────────── */
-
-function DragHandleIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-      <circle cx="9" cy="6"  r="1.5" /><circle cx="15" cy="6"  r="1.5" />
-      <circle cx="9" cy="12" r="1.5" /><circle cx="15" cy="12" r="1.5" />
-      <circle cx="9" cy="18" r="1.5" /><circle cx="15" cy="18" r="1.5" />
-    </svg>
-  );
-}
-
-function GridIcon() {
-  return (
-    <svg className="w-[14px] h-[14px]" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M3 3h7v7H3V3zm11 0h7v7h-7V3zM3 14h7v7H3v-7zm11 0h7v7h-7v-7z" />
-    </svg>
-  );
-}
-
-function ReelsTabIcon() {
-  return (
-    <svg className="w-[14px] h-[14px]" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-    </svg>
-  );
-}
-
-function ReelsBadgeIcon() {
-  return (
-    <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-    </svg>
-  );
-}
-
-function CarouselBadgeIcon() {
-  return (
-    <svg className="w-5 h-5" fill="white" viewBox="0 0 24 24">
-      <path d="M2 6h2v12H2V6zm3 0h2v12H5V6zm14 0h2v12h-2V6zm-3 0h2v12h-2V6zM8 4h8a2 2 0 012 2v12a2 2 0 01-2 2H8a2 2 0 01-2-2V6a2 2 0 012-2z" />
-    </svg>
-  );
-}
-
-function TagIcon() {
-  return (
-    <svg className="w-[14px] h-[14px]" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M17 3H7c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 3c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3zm6 12H6v-.7c0-2 4-3.1 6-3.1s6 1.1 6 3.1v.7z" />
-    </svg>
-  );
 }

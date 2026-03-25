@@ -162,42 +162,11 @@ function Navbar({
           InstaGrid
         </span>
 
-        {/* Search — desktop only */}
-        <div className="hidden md:flex items-center bg-[var(--ig-input-bg)] rounded-xl px-3 py-2 gap-2 w-[268px]">
-          <svg className="w-4 h-4 text-[var(--ig-text-secondary)] shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search"
-            className="bg-transparent text-sm flex-1 outline-none text-[var(--ig-text)] placeholder:text-[var(--ig-text-secondary)]"
-          />
-        </div>
-
         {/* Icon row */}
         <div className="flex items-center gap-0.5 text-[var(--ig-text)]">
           <NavBtn label="Home">
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
               <path d="M9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V11.543L12 2 2 11.543V22h7.005Z" />
-            </svg>
-          </NavBtn>
-
-          <NavBtn label="Search" extraClass="md:hidden">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-            </svg>
-          </NavBtn>
-
-          <NavBtn label="Explore">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" />
-              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
-            </svg>
-          </NavBtn>
-
-          <NavBtn label="Reels">
-            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12.007 2.134A10 10 0 1 0 22 12.154 10.01 10.01 0 0 0 12.007 2.134Zm-1.585 13.368L9.8 9.768l5.586 3.12Z" />
             </svg>
           </NavBtn>
 
@@ -210,13 +179,6 @@ function Navbar({
           <NavBtn label="Notifications">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
-            </svg>
-          </NavBtn>
-
-          <NavBtn label="Create">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24">
-              <rect x="3" y="3" width="18" height="18" rx="3" />
-              <path strokeLinecap="round" d="M12 8v8M8 12h8" />
             </svg>
           </NavBtn>
 

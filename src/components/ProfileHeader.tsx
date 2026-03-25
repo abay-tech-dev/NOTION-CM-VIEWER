@@ -25,21 +25,14 @@ export default function ProfileHeader({
         <header className="flex items-start gap-10 px-4 pt-8 pb-6 md:gap-16">
           {/* Avatar */}
           <div className="shrink-0">
-            <div
-              className="p-[3px] rounded-full"
-              style={{ background: "var(--ig-story-ring)" }}
-            >
-              <div className="p-[2.5px] bg-[var(--ig-surface)] rounded-full">
-                <div className="w-[130px] h-[130px] md:w-[150px] md:h-[150px] rounded-full overflow-hidden bg-[var(--ig-btn-secondary)] flex items-center justify-center">
-                  {image ? (
-                    <img src={image} alt={name} className="w-full h-full object-cover" />
-                  ) : (
-                    <svg className="w-16 h-16 text-[var(--ig-text-secondary)]" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
-                    </svg>
-                  )}
-                </div>
-              </div>
+            <div className="w-[130px] h-[130px] md:w-[150px] md:h-[150px] rounded-full overflow-hidden bg-[var(--ig-btn-secondary)] ring-1 ring-[var(--ig-border)] flex items-center justify-center">
+              {image ? (
+                <img src={image} alt={name} className="w-full h-full object-cover" />
+              ) : (
+                <svg className="w-16 h-16 text-[var(--ig-text-secondary)]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                </svg>
+              )}
             </div>
           </div>
 

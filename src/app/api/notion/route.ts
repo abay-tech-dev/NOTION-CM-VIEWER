@@ -48,9 +48,10 @@ function getPropertyValue(prop: NotionProperty | undefined): string {
   }
 }
 
-export async function GET() {
-  const token = process.env.NOTION_TOKEN;
-  const databaseId = process.env.NOTION_DATABASE_ID;
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const token = searchParams.get("token") || process.env.NOTION_TOKEN;
+  const databaseId = searchParams.get("db") || process.env.NOTION_DATABASE_ID;
 
   if (!token || !databaseId) {
     return NextResponse.json(
@@ -98,17 +99,7 @@ export async function GET() {
     // Sort by date descending (most recent first)
     posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-    return NextResponse.json({
-      posts,
-      profile: {
-        name: process.env.PROFILE_NAME ?? "instagram_user",
-        image: process.env.PROFILE_IMAGE_URL ?? "",
-        bio: process.env.PROFILE_BIO ?? "",
-        postsCount: posts.length,
-        followers: process.env.PROFILE_FOLLOWERS ?? "—",
-        following: process.env.PROFILE_FOLLOWING ?? "—",
-      },
-    });
+    return NextResponse.json({ posts });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });
